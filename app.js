@@ -6,20 +6,20 @@ var brytpunkt25List = {2016: 625800, 2017: 625800};
 
 module.exports = {
   //Tax given a yearly income.
-  yearlyTax: function(yearlyIncome, taxRate, year) {
-    return getTax(yearlyIncome, taxRate, year).totalskatt;
+  yearlyTax: function(yearlyIncome, taxRate, year, birthYear) {
+    return getTax(yearlyIncome, taxRate, year, birthYear).totalskatt;
   },
   //Tax given a monthly income.
-  monthlyTax: function(monthlyIncome, taxRate, year) {
-    return Math.round(getTax(monthlyIncome*12, taxRate, year).totalskatt/12);
+  monthlyTax: function(monthlyIncome, taxRate, year, birthYear) {
+    return Math.round(getTax(monthlyIncome*12, taxRate, year, birthYear).totalskatt/12);
   },
   //Details on all dedcutions and taxes given a yearly income.
-  taxDetails: function(yearlyIncome, taxRate, year) {
-    return getTax(yearlyIncome, taxRate, year);
+  taxDetails: function(yearlyIncome, taxRate, year, birthYear) {
+    return getTax(yearlyIncome, taxRate, year, birthYear);
   }
 }
 
-function getTax(income, taxRate, year){
+function getTax(income, taxRate, year, birthYear){
   this.income = Math.floor(income/100)*100
   this.taxRate = taxRate || 0.32;
   if(year < 2016 || year >2017 || year == undefined){
@@ -29,10 +29,15 @@ function getTax(income, taxRate, year){
   this.ibb = ibbList[year];
   this.brytpunkt20 = brytpunkt20List[year];
   this.brytpunkt25 = brytpunkt25List[year];
-  var grund = grundavdrag(income);
+  this.birthYear = birthYear || 0;
+  var age = new Date().getFullYear() - birthYear;
+  var grund = grundavdrag(income, age);
   var pension = pensionsAvgift(income);
   if(income > grund){
-    var jobb = jobbskatteavdrag(income, grund, pensionsAvgift);
+    if(age >= 65)
+      var jobb = 0;
+    else
+      var jobb = jobbskatteavdrag(income, grund, pensionsAvgift);
     var kommunal= kommunalSkatt(income, grund);
   } else {
     var jobb = kommunal = 0;
@@ -52,7 +57,7 @@ function getTax(income, taxRate, year){
 
 //https://www4.skatteverket.se/rattsligvagledning/27071.html?date=2016-01-01#section63-3
 
-function grundavdrag(income){
+function grundavdrag(income, age){
   var percentPBB = income/pbb;
   var extraAvdrag = 0;
   var basePBB = 0;
@@ -69,7 +74,29 @@ function grundavdrag(income){
   } else {
     basePBB = 0.293
   }
-  return Math.ceil((basePBB*pbb+extraAvdrag)/100)*100;
+  var pensionAdjustment = 0;
+  if(age > 65){
+    if(percentPBB <= 0.99){
+      pensionAdjustment = 0.682*pbb;
+    } else if(percentPBB <= 1.11){
+      pensionAdjustment = 0.885*pbb-0.2*income;
+    }else if(percentPBB <= 2.72){
+      pensionAdjustment = 0.609*pbb+0.049*income;
+    } else if (percentPBB <= 3.11) {
+      pensionAdjustment = 0.741*pbb;
+    } else if (percentPBB <= 3.77) {
+      pensionAdjustment = -0.430*pbb+0.1*income;
+    } else if (percentPBB <= 5.4) {
+      pensionAdjustment = 0.807*pbb
+    } else if (percentPBB <= 7.88) {
+      pensionAdjustment = 0.753*pbb+0.01*income;
+    } else if (percentPBB <= 12.43) {
+      pensionAdjustment = 1.541*pbb-0.09*income;
+    } else {
+      pensionAdjustment = 0.422*pbb;
+    }
+  }
+  return Math.ceil((basePBB*pbb+extraAvdrag+pensionAdjustment)/100)*100;
 }
 
 //kommunalSkatt is kommunal- och landstingskatt.
