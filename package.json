@@ -1,6 +1,6 @@
 {
   "name": "swe-income-tax",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Calculates Swedish income tax",
   "main": "app.js",
   "scripts": {
