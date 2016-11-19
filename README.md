@@ -1,5 +1,5 @@
 # Swedish income tax calculator
-Calculates swedish income tax.
+Calculates Swedish income tax.
 
 ##Install
     npm install swe-income-tax
@@ -46,4 +46,4 @@ Returns the total tax to be paid for the entire year.
 - @param {number} birthYear Year of birth of the tax payer
 - @return {number}
 
-Returns tax to be paid for one month.
+Returns tax to be paid per month for a monthly income.
