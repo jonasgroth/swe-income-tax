@@ -37,7 +37,7 @@ function getTax(income, taxRate, year, birthYear){
     if(age >= 65)
       var jobb = 0;
     else
-      var jobb = jobbskatteavdrag(income, grund, pensionsAvgift);
+      var jobb = jobbskatteavdrag(income, grund, pension);
     var kommunal= kommunalSkatt(income, grund);
   } else {
     var jobb = kommunal = 0;
