@@ -1,8 +1,8 @@
-var pbbList = {2016: 44300, 2017: 44800} //Prisbasbelopp
-var ibbList = {2016: 59300, 2017: 61500} //Inkomstbasbelopp
+var pbbList = {2016: 44300, 2017: 44800, 2018: 45500} //Prisbasbelopp
+var ibbList = {2016: 59300, 2017: 61500, 2018: 62500} //Inkomstbasbelopp
 //Limits for state tax
-var brytpunkt20List = {2016: 430200, 2017: 430200};
-var brytpunkt25List = {2016: 625800, 2017: 625800};
+var brytpunkt20List = {2016: 430200, 2017: 438900, 2018: 455300};
+var brytpunkt25List = {2016: 625800, 2017: 638500, 2018: 662300};
 
 module.exports = {
   //Tax given a yearly income.
